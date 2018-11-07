@@ -3,7 +3,7 @@ class RemerasLisas {
 	const property color
 	
 	method costo(){
-		if(32 >= talle <= 40 and self.esDeColorBasico()){
+		if(32 >= talle <= 40 and self.esDeColorBasico()){        // esto esta mal lo iba a arreglar pero no tuve tiempo
 			return 80
 		}
 		else if(32 >= talle <= 40){

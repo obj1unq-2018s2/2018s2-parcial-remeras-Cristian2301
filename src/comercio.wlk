@@ -13,7 +13,7 @@ object comercio {
 	}
 	
 	method tallesQueNoHuboPedidos(){
-		return new Range(32, 48).filter({})
+		return new Range(32, 48).difference(sucursales.map({sucursal => sucursal.pedidosRecibidos().map({pedido => pedido.modeloRemera().talle()})}).flatten())
 	}
 	
 	method sucursalQueMasFacturo(){
