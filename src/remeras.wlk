@@ -18,7 +18,7 @@ class RemerasLisas {
 	}
 	
 	method esDeColorBasico(){
-		return color == "blanco" or color =="negro" or color =="gris"
+		return color == "blanco" or color =="negro" or color =="gris" // TODO Mejor sería usar una colección.
 	}
 	
 	method porcentajeDeDescuento(){
@@ -97,6 +97,7 @@ class Empresa {
 }
 
 
+// TODO Esto no hereda de Empresa? No tiene derechos de autor? Parece inconsistente.
 class EmpresaConConvenio {
 	const dibujo
 	
