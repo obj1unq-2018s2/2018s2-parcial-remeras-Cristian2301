@@ -1,0 +1,44 @@
+import remeras.*
+import comercio.*
+
+describe "comercio" {
+
+	const lisaGris42 = new RemeraLisa(talle = 42, color = "gris")
+	const flores = new Sucursal(cantMinimaRemeras = 10)
+	const avellaneda = new Sucursal(cantMinimaRemeras = 3)
+	// Pedido por 5 remeras lisas grises talle 42, cuesta $500 en Flores
+	const pedido1 = new Pedido(modeloRemera = lisaGris42, cantRemeras = 5)
+	// mismo pedido en Avellaneda, cuesta $450 
+	const pedido2 = new Pedido(modeloRemera = lisaGris42, cantRemeras = 5)
+
+	const disney = new Empresa(derechosDeAutor = 100, tieneConvenio = true)
+	const disney2 = new Empresa(derechosDeAutor = 100)
+	
+	const remeraFrozen = new SublimadaDeEmpresa(color = "gris", talle = 42, altoDelDibujo = 15, anchoDelDibujo = 10, empresaDueniaDibujo = disney)
+	const remeraFrozen2 = new SublimadaDeEmpresa(color = "gris", talle = 42, altoDelDibujo = 15, anchoDelDibujo = 10, empresaDueniaDibujo = disney2)
+	// pedido de 4 remeras de Frozen en Flores se venderían a $1100
+	const pedido3 = new Pedido(modeloRemera = remeraFrozen, cantRemeras = 4)
+	const pedido4 = new Pedido(modeloRemera = remeraFrozen, cantRemeras = 4)
+	const pedido5 = new Pedido(modeloRemera = remeraFrozen2, cantRemeras = 4)
+
+	fixture {
+		// Punto 1
+		flores.registrarPedido(pedido1)
+		avellaneda.registrarPedido(pedido2)
+		flores.registrarPedido(pedido3)
+		avellaneda.registrarPedido(pedido4)
+		avellaneda.registrarPedido(pedido5)
+		
+	}
+	
+	// En Avellaneda, ese mismo pedido costaría un 20% menos ($880).
+	// Si no tuviéramos acuerdo comercial con Disney, el mismo pedido tendría sólo un 10% de descuento (ergo cuesta $990).
+	test "precio de pedidos" {
+		assert.equals(500, pedido1.precio())
+		assert.equals(450, pedido2.precio())
+		assert.equals(1100, pedido3.precio())
+		assert.equals(880, pedido4.precio())
+		assert.equals(990, pedido5.precio())
+	}
+}
+

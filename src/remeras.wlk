@@ -1,109 +1,69 @@
-class RemerasLisas {
-	const talle = 32
+object listaDePrecios {
+	var property precioTalleChico = 80
+	var property precioTalleGrande = 100
+}
+
+class RemeraLisa {
+
+	const property talle = 32
 	const property color
-	
-	method costo(){
-		if(32 >= talle <= 40 and self.esDeColorBasico()){        // esto esta mal lo iba a arreglar pero no tuve tiempo
-			return 80
-		}
-		else if(32 >= talle <= 40){
-			return 80 + (80 * 10) / 100
-		}
-		if(41 >= talle <= 48 and self.esDeColorBasico()){
-			return 100
-		}
-		else if(41 >= talle <= 48){
-			return 100 + (100 * 10) / 100
+	const precioTalleChico = listaDePrecios.precioTalleChico()
+	const precioTalleGrande = listaDePrecios.precioTalleGrande()
+
+	method costo() {
+		const costoSegunTalle = 
+			if (self.esTalleChico()) precioTalleChico else precioTalleGrande
+		
+		if (self.esDeColorBasico()) {
+			return costoSegunTalle
+		} else {
+			return costoSegunTalle + (costoSegunTalle * 10) / 100
 		}
 	}
+
+	method esTalleChico() = talle.between(32, 40)
 	
-	method esDeColorBasico(){
-		return color == "blanco" or color =="negro" or color =="gris" // TODO Mejor sería usar una colección.
+	method esDeColorBasico() {
+		return [ "blanco", "negro", "gris" ].contains(color)
 	}
-	
-	method porcentajeDeDescuento(){
-		return 10
-	}
-	
-	
+
+	method porcentajeDeDescuento() = 10
+
 }
 
-
-
-
-
-class Bordadas inherits RemerasLisas{
+class Bordada inherits RemeraLisa {
 	const cantColoresBordado = 0
-	
-	override method costo(){
-		return super() + self.costoBordado()
-	}
-	
-	method costoBordado(){
-		if(cantColoresBordado == 1){
-			return 20
-		}
-		else{
-			return 10 * cantColoresBordado
-		}
-	}
-	
-	override method porcentajeDeDescuento(){
-		return 2
-	}
+
+	override method costo() = super() + self.costoBordado()
+
+	method costoBordado() = 10 * cantColoresBordado.max(2)
+
+	override method porcentajeDeDescuento() = 2
 }
 
-
-
-
-
-class Sublimadas inherits RemerasLisas {
+class Sublimada inherits RemeraLisa {
 	const altoDelDibujo = 0
 	const anchoDelDibujo = 0
-	
-	override method costo(){
-		return super() + self.costoSublimado()
+
+	override method costo() = super() + self.costoSublimado()
+
+	method costoSublimado() {
+		return 0.50 * altoDelDibujo * anchoDelDibujo
 	}
-	
-	method costoSublimado(){
-		return 0.50 * (altoDelDibujo * anchoDelDibujo)
-	}
-	
 }
 
-
-
-
-
-class SublimadasPropiedadDeEmpresa inherits Sublimadas {
+class SublimadaDeEmpresa inherits Sublimada {
 	const property empresaDueniaDibujo
+
+	override method costo() = super() + self.costoDerechosDeAutor()
 	
-	override method costoSublimado(){
-		return super() + empresaDueniaDibujo.derechosDeAutor()
-	}
-	
-	override method porcentajeDeDescuento(){
-		if(empresaDueniaDibujo)
-	}
-	
+	method costoDerechosDeAutor() = empresaDueniaDibujo.derechosDeAutor()
+
+	override method porcentajeDeDescuento() =
+		if (empresaDueniaDibujo.tieneConvenio()) 20 else super()
 }
-
-
 
 class Empresa {
-	const dibujo
 	const property derechosDeAutor
-	
+	const property tieneConvenio = false
 }
-
-
-// TODO Esto no hereda de Empresa? No tiene derechos de autor? Parece inconsistente.
-class EmpresaConConvenio {
-	const dibujo
-	
-}
-
-
-
-
-

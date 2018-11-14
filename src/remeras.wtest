@@ -1,0 +1,44 @@
+import remeras.*
+
+describe "remeras" {
+
+	test "una remera color gris de talle 40 cuesta $80" {
+		const remera = new RemeraLisa(talle = 40, color = "gris")
+		assert.equals(80, remera.costo())
+	}
+
+// el talle 42 cuesta $100. 
+// las mismas remeras en color verde cuestan $88 y $110.
+
+	test "Remera de Frousen cuesta 175" {
+		const remera = new Sublimada(
+			color = "gris",
+			talle = 42,
+			altoDelDibujo = 15,
+			anchoDelDibujo = 10
+		)
+
+		assert.equals(175, remera.costo())
+	}
+
+	test "Remera de Frozen cuesta 275" {
+		// Disney nos pide $100 por usar sus dibujos.
+		const disney = new Empresa(derechosDeAutor = 100) 
+		// Entonces, para una remera gris, talle 42
+		// con un sublimado de Frozen de 10 x 15 cm tenemos
+		
+		const remera = new SublimadaDeEmpresa(
+			color = "gris",
+			talle = 42,
+			altoDelDibujo = 15,
+			anchoDelDibujo = 10,
+			empresaDueniaDibujo = disney
+		)
+
+		// $100 es el costo de una remera lisa de las mismas características
+		// $175 de costo de sublimado (10 x 15 x 0.5 = $75 de acuerdo a la superficie + $100 de derechos de autor). 
+		// Por lo tanto, el costo de la remera es $275.
+		assert.equals(275, remera.costo())
+	}
+}
+

@@ -2,81 +2,83 @@ import remeras.*
 
 object comercio {
 	const sucursales = #{}
+
+	method pedidos() = sucursales.flatMap { sucursal => sucursal.pedidos() }
+	method talles() = new Range(32, 48).asList().asSet()
 	
-	
-	method totalFacturado(){
-		// TODO Acá falta MUCHO delegar y dividir en subtareas.
-		// No es lo que pide el enunciado
-		return sucursales.sum({sucursal => sucursal.pedidosRecibidos().sum({pedido => pedido.modeloRemera().costo() * pedido.cantRemeras()})})
-	}
-	
-	method pedidoMasCaro(){
-		// TODO Acá falta MUCHO delegar y dividir en subtareas. Y además repite el código anterior.
-		// No es lo que pide el enunciado
-		// TODO map no hace lo que vos necesitás.
-		return sucursales.map({sucursal => sucursal.pedidosRecibidos().max({pedido => pedido.modeloRemera().costo()})}).max({pedido => pedido.modeloRemera().costo()})
-	}
-	
-	method tallesQueNoHuboPedidos(){
-		// TODO Delegar, dividir en subtareas.
-		return new Range(32, 48).difference(sucursales.map({sucursal => sucursal.pedidosRecibidos().map({pedido => pedido.modeloRemera().talle()})}).flatten())
-	}
-	
-	method sucursalQueMasFacturo(){
-		// TODO ¿Por qué no usás el mensaje totalFacturado más arriba?
-		return sucursales.max({sucursal => sucursal.totalFacturado()})
-	}
-	
-	method sucursalesQueVendieronRemerasDeTodosTalles(){
-		sucursales.filter({sucursal => sucursal}) // TODO Incompleto, supongo.
-	}
+	// Punto C2
+	method totalFacturado() = self.pedidos().sum { pedido => pedido.precio() }
+
+	// Punto C4
+	method cantPedidosDeColor(color) =
+		self.pedidos().count { pedido => pedido.modeloRemera().color() == color }
+
+	// Punto C5
+	method pedidoMasCaro() = self.pedidos().max { pedido => pedido.precio() }
+
+	// Punto C6
+	method tallesQueNoHuboPedidos() = 
+		self.talles().filter { talle => not self.huboPedidoDeTalle(talle) } 
+
+	method huboPedidoDeTalle(talle) = 
+		self.pedidos().any { pedido => pedido.modeloRemera().talle() == talle }
+
+	// Punto C7
+	method sucursalQueMasFacturo() =
+		sucursales.max({ sucursal => sucursal.totalFacturado() })
+
+	// Punto C8
+	method sucursalesQueVendieronRemerasDeTodosTalles() =
+		sucursales.filter { sucursal => sucursal.vendioTodosLosTalles(self.talles()) } 
+
 }
 
+class Sucursal {
 
-class Sucursal{
 	const property pedidosRecibidos = #{}
-	const property cantMinimaRemeras = 0
-	
-	method registrarPedido(pedido){
+	const property cantMinimaRemeras
+
+	// Punto C1	
+	method registrarPedido(pedido) {
+		pedido.sucursal(self)
 		pedidosRecibidos.add(pedido)
 	}
+
+	// Punto C3	
+	method totalFacturado() = pedidosRecibidos.sum { pedido => pedido.precio() }
+
+	method vendioTodosLosTalles(talles) = 
+		talles.all { talle => self.vendioTalle(talle) }
 	
-	method totalFacturado(){
-		// TODO ¿Por qué no le preguntás AL PEDIDO su costo?
-		return pedidosRecibidos.sum({pedido => pedido.modeloRemera().costo() * pedido.cantRemeras()})
-	}
-	
-	method cantPedidosDeRemera(color){
-		return pedidosRecibidos.count({pedido => pedido.modeloRemera().color() == color})
-	}
+	method vendioTalle(talle) = 
+		pedidosRecibidos.any { pedido => pedido.modeloRemera().talle() == talle }
 }
 
+class Pedido {
 
-class Pedido{
-	const property modeloRemera 
+	const property modeloRemera
 	const property cantRemeras = 0
-	const sucursal
-	
-	method precioBase(){
+	var property sucursal = null // La sucursal se auto-asigna cuando le registro el pedido.
+
+	method precioBase() {
 		return modeloRemera.costo() * cantRemeras
 	}
-	
-	method precio(){
-		if(self.aplicaDescuento()){
+
+	method precio() {
+		if (self.aplicaDescuento()) {
 			return self.precioBase() - self.descuento()
-		}
-		else{
+		} else {
 			return self.precioBase()
 		}
 	}
-	
-	method descuento(){
+
+	method descuento() {
 		return self.precioBase() * (modeloRemera.porcentajeDeDescuento() / 100)
 	}
-	
-	method aplicaDescuento(){
+
+	method aplicaDescuento() {
 		return cantRemeras >= sucursal.cantMinimaRemeras()
 	}
-}
 
+}
 
